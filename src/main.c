@@ -2,14 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct node_list;
+struct node;
+
 typedef struct node {
     int id;
     struct node *next;
     struct node *previous;
-	struct t_node_list *adjacency_list;
+	struct node_list *adjacency_list;
 } t_node;
 
-typedef struct {
+typedef struct node_list {
     t_node *first;
     t_node *last;
 } t_node_list;
@@ -48,18 +51,21 @@ void add_node_to_list(t_node_list* node_list, t_node *node){
     }
 }
 
-t_node_list *create_adjacency_list (t_node_list *node_list, t_node *node, t_edge edge){
-	t_node_list *adjacency_list;
+void add_to_adjacency_list (t_node_list *node_list, t_edge edge){
 	t_node *aux_node, *src_node, *tgt_node;
 	aux_node = node_list->first;
-	while (aux_node->id != edge.source && aux_node->next != NULL){
+	while (aux_node->id != edge.source && aux_node != NULL){
+		printf("source id = %d\n", aux_node->id);
 		aux_node = aux_node->next;
 	}
 	src_node = aux_node;
 	aux_node = node_list->first;
-	while (aux_node->id != edge.target && aux_node->next != NULL){
+	while (aux_node->id != edge.target && aux_node != NULL){
+		printf("target id = %d\n", aux_node->id);
 		aux_node = aux_node->next;
 	}
+	tgt_node = aux_node;
+	add_node_to_list(src_node->adjacency_list, tgt_node);
 }
 
 
@@ -107,9 +113,12 @@ void parser (FILE *stream){
 				sz = strlen(buffer);
 				buffer[sz - 1] = '\0';
 				target = atoi(buffer);
-				printf("source = %d, target = %d,\n", source, target);
 				edge.source = source;
 				edge.target = target;
+				printf("source = %d, target = %d,\n", edge.source, edge.target);
+				add_to_adjacency_list(node_list, edge);
+				//printf("source = %d,\n", node_list->last->id);
+                //printf("target = %d,\n", node_list->last->adjacency_list->last->id);
 			}
             for (k = 0; k <= j; k++){
                 //printf("\nAUX\n%s\n", aux_stack[k]);
@@ -121,6 +130,7 @@ void parser (FILE *stream){
             i++;
         }
     }
+
 }
 
 int main(){
