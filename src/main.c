@@ -14,6 +14,8 @@ typedef struct node {
 
 typedef struct node_list {
     int id;
+    int outdegree;
+    int indegree;
     t_node *first;
     t_node *last;
     struct node_list *next;
@@ -66,7 +68,7 @@ void add_node_to_list(t_node_list* node_list, t_node *node){
     }
 }
 
-t_node *find_vertex (t_node_list *node_list, int id){
+t_node_list *find_vertex (t_node_list *node_list, int id){
     t_node_list *vertex;
     vertex = node_list;
     while(vertex->id != id){
@@ -101,7 +103,6 @@ void add_to_adjacency_list (t_node_list *node_list, t_edge edge){
 	//printf("tgt %d\n", tgt_node->id);
 	aux_node = node_list->first;
 	printf("source %d, target %d,\n", edge.source, edge.target);
-
 	while (aux_node->id != edge.source && aux_node != NULL){
 		printf("SOURCE id = %d\n", aux_node->id);
 		aux_node = aux_node->next;
@@ -213,22 +214,101 @@ void create_adjacency(t_node_list *node_list, t_parsed_info graph){
         src = find_vertex(node_list, graph.edge[i].source);
         node = create_node(graph.edge[i].target);
         add_node_to_list(src, node);
+        src = find_vertex(node_list, graph.edge[i].target);
+        node = create_node(graph.edge[i].source);
+        add_node_to_list(src, node);
 
     }
 
 }
 
 void print_graph (t_node_list *node_list){
-    while (node_list != NULL){
-        printf("%d --> ", node_list->id);
-        while(node_list->first != NULL){
-            printf("%d ", node_list->first->id);
-            node_list->first = node_list->first->next;
+    t_node_list *aux;
+    t_node *node;
+    aux = node_list;
+    node = aux->first;
+    while (aux != NULL){
+        printf("%d --> ", aux->id);
+        while(node != NULL){
+            printf("%d ", node->id);
+            node = node->next;
 
         }
         printf("\n");
-    node_list = node_list->next;
-    getchar();
+        printf("Outdegree = %d,\n", aux->outdegree);
+    aux = aux->next;
+    if (aux != NULL)    node = aux->first;
+    }
+}
+
+void node_outdegree(t_node_list *graph){
+    int count;
+    t_node_list *aux;
+    t_node *node;
+    aux = graph;
+    node = aux->first;
+    while(aux != NULL){
+        count = 0;
+        while (node != NULL){
+            count++;
+            node = node->next;
+        }
+        aux->outdegree = count;
+        printf("Vertex %d, outdegree: %d\n", aux->id, aux->outdegree);
+        aux = aux->next;
+        if (aux != NULL)    node = aux->first;
+    }
+}
+
+void node_indegree(t_node_list *graph){
+    int count;
+    t_node_list *aux;
+    t_node *node;
+    t_node_list *indegree;
+    indegree = graph;
+    aux = graph;
+    node = aux->first;
+    for (int i = 1; i < 35; i++){
+        count = 0;
+        while(aux != NULL){
+            while (node != NULL){
+                if (node->id == i)  count++;
+                node = node->next;
+            }
+            aux = aux->next;
+            if (aux != NULL)    node = aux->first;
+        }
+        indegree->indegree = count;
+        printf("Vertex %d, indegree: %d\n", indegree->id, count);
+        indegree = indegree->next;
+        aux = graph;
+    }
+}
+
+void undirected_graph(t_node_list *graph){
+    int count;
+    t_node_list *aux, *reverse;
+    t_node *node, *tmp;
+    t_node_list *indegree;
+    indegree = graph;
+    aux = graph;
+    node = aux->first;
+    for (int i = 1; i < 35; i++){
+        while(aux != NULL){
+            while (node != NULL){
+                if (node->id == i){
+                    reverse = find_vertex(graph, i);
+                    tmp = create_node(aux->id);
+                    add_node_to_list(reverse, tmp);
+                }
+                node = node->next;
+            }
+            aux = aux->next;
+            if (aux != NULL)    node = aux->first;
+        }
+        
+
+        aux = graph;
     }
 }
 
@@ -240,9 +320,14 @@ int main(){
     graph = parser(fp);
     list = create_graph(graph);
     create_adjacency(list, graph);
+    //undirected_graph(list);
+    node_outdegree(list);
+    node_indegree(list);
     print_graph(list);
     /*for (int i = 0; i < graph.count_edge; i++){
         printf("source = %d, target = %d,\n", graph.edge[i].source, graph.edge[i].target);
     }*/
+    //node_degree(list);
+    //node_degree(list);
     return 0;
 }
