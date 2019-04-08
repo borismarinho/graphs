@@ -16,6 +16,7 @@ typedef struct node_list {
     int id;
     int outdegree;
     int indegree;
+    int clus_coef;
     t_node *first;
     t_node *last;
     struct node_list *next;
@@ -43,6 +44,9 @@ t_node_list *create_node_list (){
     node_list->first = NULL;
     node_list->last = NULL;
     node_list->next = NULL;
+    node_list->indegree = 0;
+    node_list->outdegree = 0;
+    node_list->clus_coef = 0;
     return node_list;
 }
 
@@ -311,6 +315,92 @@ void undirected_graph(t_node_list *graph){
         aux = graph;
     }
 }
+/*
+int clustering_count(t_node *adjacent, t_node *neighbour, int count, t_node *repeat){
+    t_node *node;
+    //printf("BEFORE: %d\n", count);
+    while(adjacent != NULL){
+        node = neighbour;
+        printf("VIZINHO: %d\n", adjacent->id);
+        while(node != NULL){
+            if (adjacent->id == node->id) {
+                count++;
+                printf("\nIGUAS: %d IGUAIS: %d\n", adjacent->id, node->id);
+                
+            }
+            //printf("ID %d\n", node->id);
+                    
+            //    getchar();
+            printf("%d ", node->id);
+            node = node->next;
+        }
+        getchar();
+        adjacent = adjacent->next;
+                
+    }
+    printf("COUNT: %d\n", count);
+    return count;
+}
+
+void clustering_coeficient(t_node_list *graph){
+    t_node_list *aux, *tmp1;
+    t_node *node, *tmp2;
+    int n_vertex, i;
+    aux = graph;
+    node = aux->first;
+    while (aux != NULL){
+        n_vertex = 0;
+        //printf("NODO %d ADJACENTE %d\n", aux->id, node->id);
+        while (node != NULL){
+            tmp1 = find_vertex(graph, node->id);
+            //printf("ADJACENTE %d\n", node->id);
+            n_vertex = clustering_count(tmp1->first, node, n_vertex, aux->first);
+            node = node->next;
+        }
+        printf("%d. n_vertex = %d\n", i, n_vertex);
+        i++;
+        aux = aux->next;
+        if (aux != NULL)    node = aux->first;
+    }
+}
+*/
+void verify(t_node_list *list, int id1, int id2){
+    t_node_list *n1, *n2;
+    int flag1 = 0, flag2 = 0, count = 0;
+    n2 = find_vertex(list, id2);
+    while(n1->first != NULL){
+        n1 = find_vertex(list, id1);
+        printf("LISTA %d\n", n2->first->id);
+        while(n1->first != NULL){
+            count++;
+            printf("%d\n", n2->first->id);
+            //if(n1->first->id == n2->first->id){
+            //}
+            if (n1->first->next != NULL)    n1->first = n1->first->next;
+            else    break;
+        }
+        getchar();    
+        if (n2->first->next != NULL)    n2->first = n2->first->next;
+        else    break;
+        printf("ALO\n");
+    }
+}
+
+void clustering_coeficient(t_node_list *list){
+    t_node_list *graph, *neighbour;
+    t_node *adjacent;
+    graph = list;
+    while (graph != NULL){
+        adjacent = graph->first;
+        while (adjacent != NULL){
+            verify(list, adjacent->id, adjacent->id);
+            adjacent->next;
+        }
+
+
+        graph = graph->next;
+    }
+}
 
 int main(){
     t_parsed_info graph;
@@ -329,5 +419,6 @@ int main(){
     }*/
     //node_degree(list);
     //node_degree(list);
+    clustering_coeficient(list);
     return 0;
 }
