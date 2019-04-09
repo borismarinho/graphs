@@ -1,9 +1,35 @@
+/*
+    16/0114195 - Boris Marinho Ramos Silva Araujo
+    19/0055511 - Ignacio Sanabria Alonso de Caso
+
+    Os dados estao projetados para serem impressos no terminal.
+    O codigo esta baguncado, nao esta dividio em bibliotecas, esta 
+    pouco modularizado, varias variaveis estao mal nomeadas e algumas nao sao nem usadas,
+    mas o codigo funciona.
+    
+    Compile com
+    $ gcc -o main main.c
+    
+    Compilado com Sistema operacional de 32 bits Ubuntu  16.04.11
+    Versão do compilador:
+    $ gcc --version
+    gcc (Ubuntu 5.4.0-6ubuntu1~16.04.11) 5.4.0 20160609
+    Copyright (C) 2015 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 struct node_list;
 struct node;
+
+//Tipo No da lista de adjacencias
 
 typedef struct node {
     int id;
@@ -12,11 +38,13 @@ typedef struct node {
 	struct node_list *adjacency_list;
 } t_node;
 
+//Tipo no de grafo
+
 typedef struct node_list {
     int id;
     int outdegree;
     int indegree;
-    int clus_coef;
+    double clus_coef;
     t_node *first;
     t_node *last;
     struct node_list *next;
@@ -38,6 +66,8 @@ typedef struct{
     t_node_list *node_list;
 } t_graph;
 
+
+//Aloca no de grafo
 t_node_list *create_node_list (){
     t_node_list *node_list;
     node_list = (t_node_list *) malloc (sizeof(t_node_list));
@@ -50,6 +80,8 @@ t_node_list *create_node_list (){
     return node_list;
 }
 
+
+//Aloca no de lista de adjacencia
 t_node *create_node(int id){
     t_node *node;
     node = (t_node *) malloc (sizeof(t_node));
@@ -60,6 +92,8 @@ t_node *create_node(int id){
     return node;
 }
 
+
+//Adiciona no na lista de adjacencia
 void add_node_to_list(t_node_list* node_list, t_node *node){
     if (node_list->first == NULL && node_list->last == NULL){
         node_list->first = node;
@@ -72,6 +106,8 @@ void add_node_to_list(t_node_list* node_list, t_node *node){
     }
 }
 
+
+//Encontra o endereco de memoria do no do grafo
 t_node_list *find_vertex (t_node_list *node_list, int id){
     t_node_list *vertex;
     vertex = node_list;
@@ -81,6 +117,8 @@ t_node_list *find_vertex (t_node_list *node_list, int id){
     return vertex;
 }
 
+
+//A partir da informacao parseada no arquivo gml se cria uma estrutura dinamica de grafos
 t_node_list *create_graph(t_parsed_info info){
     t_node_list *node_list;
     t_node_list *header, *aux;
@@ -122,7 +160,7 @@ void add_to_adjacency_list (t_node_list *node_list, t_edge edge){
 }
 
 
-
+//Le o arquivo gml utilizando uma pilha e salva em uma estrutura estatica
 t_parsed_info parser (FILE *stream){
     t_parsed_info graph;
     t_node_list *node_list;
@@ -210,7 +248,7 @@ t_parsed_info parser (FILE *stream){
         aux = aux->next;
     }*/
 
-
+//Cria lista de adjacencias
 void create_adjacency(t_node_list *node_list, t_parsed_info graph){
     t_node_list *src;
     t_node *node;
@@ -226,6 +264,7 @@ void create_adjacency(t_node_list *node_list, t_parsed_info graph){
 
 }
 
+//Imprime o grafo
 void print_graph (t_node_list *node_list){
     t_node_list *aux;
     t_node *node;
@@ -239,12 +278,15 @@ void print_graph (t_node_list *node_list){
 
         }
         printf("\n");
-        printf("Outdegree = %d,\n", aux->outdegree);
+        printf("Degree = %d,\n", aux->outdegree);
+        printf("Clustering coeficient = %g,\n", aux->clus_coef);
     aux = aux->next;
     if (aux != NULL)    node = aux->first;
     }
 }
 
+
+//Calcula o grau do grafo
 void node_outdegree(t_node_list *graph){
     int count;
     t_node_list *aux;
@@ -258,12 +300,13 @@ void node_outdegree(t_node_list *graph){
             node = node->next;
         }
         aux->outdegree = count;
-        printf("Vertex %d, outdegree: %d\n", aux->id, aux->outdegree);
+        printf("Vertex %d, degree: %d\n", aux->id, aux->outdegree);
         aux = aux->next;
         if (aux != NULL)    node = aux->first;
     }
 }
 
+//Implementacao para grafos direcionados
 void node_indegree(t_node_list *graph){
     int count;
     t_node_list *aux;
@@ -289,6 +332,8 @@ void node_indegree(t_node_list *graph){
     }
 }
 
+
+//Esta funcao nao eh chamada
 void undirected_graph(t_node_list *graph){
     int count;
     t_node_list *aux, *reverse;
@@ -364,42 +409,77 @@ void clustering_coeficient(t_node_list *graph){
     }
 }
 */
-void verify(t_node_list *list, int id1, int id2){
+
+//Comparando duas listas a funcao conta quantos elementos formam triangulos
+int verify(t_node_list *list, int id1, int id2, int count){
     t_node_list *n1, *n2;
-    int flag1 = 0, flag2 = 0, count = 0;
+    t_node *v1, *v2;
     n2 = find_vertex(list, id2);
-    while(n1->first != NULL){
+    v2 = n2->first;
+    while(v2 != NULL){
         n1 = find_vertex(list, id1);
-        printf("LISTA %d\n", n2->first->id);
-        while(n1->first != NULL){
-            count++;
-            printf("%d\n", n2->first->id);
-            //if(n1->first->id == n2->first->id){
-            //}
-            if (n1->first->next != NULL)    n1->first = n1->first->next;
-            else    break;
+        v1 = n1->first;
+        //printf("LISTA %d\n", v2->id);
+        while(v1 != NULL){
+            if(v1->id == v2->id)  count++;
+          //  printf("%d ", v1->id);
+            v1 = v1->next;
         }
-        getchar();    
-        if (n2->first->next != NULL)    n2->first = n2->first->next;
-        else    break;
-        printf("ALO\n");
+        //printf("\n");
+        //getchar();    
+        v2 = v2->next;
     }
+    return count;
 }
 
+//Calcula quantos elementos tem a lista de adjacencias
+int list_size(t_node_list *list){
+    int count = 0;
+    t_node *node;
+    node = list->first;
+    while (node != NULL){
+        count++;
+        node = node->next;
+    }
+
+    return count;
+}
+
+//Calcula o coeficiente de aglomeracao
 void clustering_coeficient(t_node_list *list){
+    int count, k;
     t_node_list *graph, *neighbour;
     t_node *adjacent;
     graph = list;
     while (graph != NULL){
+        count = 0;
         adjacent = graph->first;
+        //printf("Grafo: %d, Adjacente: %d\n", graph->id, adjacent->id);
         while (adjacent != NULL){
-            verify(list, adjacent->id, adjacent->id);
-            adjacent->next;
-        }
-
-
+            count = verify(list, graph->id, adjacent->id, count);
+            adjacent = adjacent->next;
+        }       
+        k = list_size(graph);
+        if (count == 0) graph->clus_coef = 0;
+        else graph->clus_coef = (double) count/(k*(k-1));
+        //printf("Count = %d\n", count);
+        //getchar();
         graph = graph->next;
     }
+}
+
+//Calcula a aglomeracao media
+void avg_clustering(t_node_list *list){
+    double avg = 0;
+    int aux, tmp = 0;
+    while (list != NULL){
+        aux = (int) (list->clus_coef * 100000);
+        tmp += aux;
+        list = list->next;
+    }
+    avg = (double) tmp/100000;
+    avg = avg/34;
+    printf("Average clustering: %g\n", avg);
 }
 
 int main(){
@@ -413,12 +493,13 @@ int main(){
     //undirected_graph(list);
     node_outdegree(list);
     node_indegree(list);
-    print_graph(list);
     /*for (int i = 0; i < graph.count_edge; i++){
         printf("source = %d, target = %d,\n", graph.edge[i].source, graph.edge[i].target);
     }*/
     //node_degree(list);
     //node_degree(list);
     clustering_coeficient(list);
+    print_graph(list);
+    avg_clustering(list);
     return 0;
 }
