@@ -168,7 +168,7 @@ void printIncMatrix(int **incMatrix, int totalVertices, int totalEdges){
     }
     printf("//----------//----------//\n");
 }
-s
+
 int **createIncMatrix(int **adjMatrix, int size){
     int **incMatrix = NULL;
     int count = 0, count2 = 0;
