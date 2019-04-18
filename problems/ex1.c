@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 1000;
+#define MAX 1000
 
 typedef struct adjListNode {
     char *id;
@@ -20,7 +20,7 @@ typedef struct {
 
 char *readInput (){
     char *input;
-    char buffer[1000];
+    char buffer[MAX];
     scanf("%s", buffer);
     getchar();
     input = (char *) malloc((strlen(buffer) + 1) * sizeof(char));
