@@ -118,6 +118,13 @@ int **newAdjMatrix(int size){
     return adjMatrix;
 }
 
+void freeAdjMatrix(int **adjMatrix, int size){
+    for (int i = 0; i < size; i++){
+        free(adjMatrix[i]);
+    }
+    free(adjMatrix);
+}
+
 int **createAdjMatrix (t_graph *graph, int size){
     int **adjMatrix;
     adjMatrix = newAdjMatrix(size);
@@ -169,6 +176,13 @@ void printIncMatrix(int **incMatrix, int totalVertices, int totalEdges){
     printf("//----------//----------//\n");
 }
 
+void freeIncMatrix(int **incMatrix, int totalVertices, int totalEdges){
+    for (int i = 0; i < totalEdges; i++){
+        free(incMatrix[i]);
+    }
+    free(incMatrix);
+}
+
 int **createIncMatrix(int **adjMatrix, int size){
     int **incMatrix = NULL;
     int count = 0;
@@ -189,8 +203,27 @@ int **createIncMatrix(int **adjMatrix, int size){
         }
     }
     printIncMatrix(incMatrix, size, count);
+    freeIncMatrix(incMatrix, size, count);
 }
 
+void freeAdjListNode(t_adjListNode *adjListNode){
+    t_adjListNode *tmp1, *tmp2;
+    tmp1 = adjListNode;
+    while(tmp1 != NULL){
+        tmp2 = tmp1->next;
+        free(tmp1->id);
+        free(tmp1);
+        tmp1 = tmp2;
+    }
+}
+
+void freeGraph(t_graph *graph, int size){
+    for (int i = 0; i < size; i++){
+        freeAdjListNode(graph[i].adjList->first);
+        free(graph[i].adjList);
+        free(graph[i].id);
+    }
+}
 
 void createGraph (){
     int count = 0;
@@ -211,6 +244,8 @@ void createGraph (){
     printGraph(graph, count);
     printAdjMatrix(adjMatrix, count);
     createIncMatrix(adjMatrix, count);
+    freeAdjMatrix(adjMatrix, count);
+    free(graph);
 }
 
 
