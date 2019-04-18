@@ -171,13 +171,12 @@ void printIncMatrix(int **incMatrix, int totalVertices, int totalEdges){
 
 int **createIncMatrix(int **adjMatrix, int size){
     int **incMatrix = NULL;
-    int count = 0, count2 = 0;
+    int count = 0;
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
             if (adjMatrix[i][j] == 1)   count++;
         }
     }
-    printAdjMatrix(adjMatrix, size);
     incMatrix = newIncMatrix(size, count/2);
     count = 0;
     for (int i = 0; i < size; i++){
