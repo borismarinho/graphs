@@ -75,10 +75,10 @@ t_graph *newNode (t_graph *graph, char *input, int count){
         graph = (t_graph *) malloc(sizeof(t_graph));
         graph[count].id = input;
         graph[count].adjList = NULL;
-        } else {
-            graph = (t_graph *) realloc(graph, sizeof(graph));
-            graph[count].id = input;
-            graph[count].adjList = NULL;
+    } else { 
+        graph = (t_graph *) realloc(graph, (count + 1) * sizeof(t_graph));
+        graph[count].id = input;
+        graph[count].adjList = NULL;
         }
     return graph;
 }
