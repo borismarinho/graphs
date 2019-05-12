@@ -5,7 +5,7 @@
 
 #define TRUE 1
 #define FALSE 0
-#define MIN 0
+#define MIN 10000
 
 typedef struct node{
     int id;
@@ -21,7 +21,7 @@ typedef struct{
     char *label;
     int weight;
     int flagVisit;
-    int soften;
+    int relax;
     t_list *list;
 }t_graph;
 
@@ -37,6 +37,8 @@ typedef struct{
     t_longPathNode *last;
 }t_longestPath;
 
+
+//Adiciona o no na lista de adjacencias
 t_graph addNodeToList (t_graph graph, int target){
     t_node *node;
     if (graph.list == NULL ){
@@ -50,6 +52,7 @@ t_graph addNodeToList (t_graph graph, int target){
     return graph;
 }
 
+//Localiza a o no de origem e adiciona o no de destino a lista de adjacencias
 t_graph *generateEdges(t_graph *graph, t_parsedInfo info){
     for (int i = 0; i < info.totalEdges; i++){
         for (int j = 0; j < info.totalNodes; j++) {
@@ -61,6 +64,7 @@ t_graph *generateEdges(t_graph *graph, t_parsedInfo info){
     return graph;
 }
 
+//Gera os nos com todas as informacoes gml numa estrutura tipo t_graph
 t_graph *generateNodes(t_parsedInfo info){
     t_graph *graph;
     graph = (t_graph *) malloc(info.totalNodes * sizeof(t_graph));
@@ -70,12 +74,13 @@ t_graph *generateNodes(t_parsedInfo info){
         strcpy(graph[i].label, info.nodes[i].label);
         graph[i].weight = info.nodes[i].weight;
         graph[i].flagVisit = FALSE;
-        graph[i].soften = MIN;
+        graph[i].relax = MIN;
         graph[i].list = NULL;
     }
     return graph;
 }
 
+//Gera o grafo inteiro com as informacoes e as listas de adjacencias
 t_graph *generateGraph(t_parsedInfo info){
     t_graph *graph;
     graph = generateNodes(info);
@@ -83,11 +88,9 @@ t_graph *generateGraph(t_parsedInfo info){
     return graph;
 }
 
-t_list *generateStarters(t_graph *graph, t_parsedInfo info){
-    t_list *starters;
-    t_node *node;
-    starters = (t_list *) malloc(sizeof(t_list));
-    starters->first = NULL;
+
+//Marca os nos que nao sao destino de nenhuma aresta
+void *generateStarters(t_graph *graph, t_parsedInfo info){
     for (int i = 0; i < info.totalNodes; i++){
         for (int j = 0; j < info.totalEdges; j++){
             if (graph[i].id == info.edges[j].target)    graph[i].flagVisit = TRUE;
@@ -95,120 +98,185 @@ t_list *generateStarters(t_graph *graph, t_parsedInfo info){
     }
     for (int i = 0; i < info.totalNodes; i++){
         if (graph[i].flagVisit == FALSE){
-            node = (t_node *) malloc(sizeof(t_node));
-            node->id = graph[i].id;
-            node->next = starters->first;
-            starters->first = node;
+            graph[i].relax = graph[i].weight;
         }
     }
     for (int i = 0; i < info.totalNodes; i++){
         graph[i].flagVisit = FALSE;
     }
-    return starters;
 }
 
-t_graph *find(t_graph *graph, t_parsedInfo info, int id){
-    for (int i = 0; i < info.totalNodes; i++){
+//Encontra um no no grafo e retorna seu endereco a partir de sua ID
+t_graph *find(t_graph *graph, t_parsedInfo info, int id) {
+    for (int i = 0; i < info.totalNodes; i++) {
         if (graph[i].id == id) return &graph[i];
     }
 }
 
-void recursion(t_graph *graph, t_parsedInfo info){
-    for (int i = 0; i < info.totalNodes; i++){
-        graph[i].flagVisit
+//Multiplica os pesos dos nos por -1
+void invertWeights(t_graph *graph, t_parsedInfo info){
+    for (int i = 0; i < info.totalNodes; i++)
+        graph[i].weight = (-1) * graph[i].weight;
+}
+
+//Multiplica os relaxamentos dos nos por -1
+void invertRelax(t_graph *graph, t_parsedInfo info){
+    for (int i = 0; i < info.totalNodes; i++)
+        graph[i].relax = (-1) * graph[i].relax;
+}
+
+//Realiza a ordenacao topologica
+void topSort(t_graph *graph, t_parsedInfo info, t_list *topoSort){
+    t_graph *aux;
+    t_node *node;
+    graph->flagVisit = TRUE;
+    if (graph->list != NULL){
+        while(graph->list->first != NULL){
+            aux = find(graph, info, graph->list->first->id);
+            if (aux->flagVisit == FALSE)
+                topSort(aux, info, topoSort);
+            graph->list->first = graph->list->first->next;
+        }
+    }
+    node = (t_node *) malloc(sizeof(t_node));
+    node->id = graph->id;
+    node->next = topoSort->first;
+    topoSort->first = node;
+}
+
+//Percorre as listas de adjacencias fazendo relaxamento nos nos
+void relaxAdj(t_graph *graph, t_parsedInfo info, int id) {
+    t_graph *gNode, *adjNode;
+    t_node *aux;
+    gNode = find(graph, info, id);
+    if (gNode->list != NULL) {
+        aux = gNode->list->first;
+        while (aux != NULL) {
+            adjNode = find(graph, info, aux->id);
+            if (adjNode->weight + gNode->relax <= adjNode->relax) {
+                adjNode->relax = adjNode->weight + gNode->relax;
+            }
+            aux = aux->next;
+        }
     }
 }
 
+//Encontra o menor caminho
+void shortestPath(t_graph *graph, t_parsedInfo info, t_list *topoSort){
+    t_list *aux;
+    aux = topoSort;
+    while(aux->first != NULL){
+        relaxAdj(graph, info, aux->first->id);
+        aux->first = aux->first->next;
+    }
+}
 
-void softenAdj(t_graph *graph, t_parsedInfo info, int id, t_longestPath *path){
+//Encontra a maior quantidade de creditos a ser percorrida
+int maxCredits(t_graph *graph, t_parsedInfo info){
+    int maxC = 0;
+    for (int i = 0; i < info.totalNodes; i++)
+        if (graph[i].relax >= maxC)   maxC = graph[i].relax;
+    return maxC;
+}
+
+//Calcula quantos caminhos criticos existem
+int totalCriticals(t_graph *graph, t_parsedInfo info, int maxC){
+    int counter = 0;
+    for (int i = 0; i < info.totalNodes; i++)
+        if (graph[i].relax == maxC) counter++;
+    return counter;
+}
+
+
+//Encontra os vertices terminais de todos os caminhos criticos
+t_list *criticalEndPoints(t_graph *graph, t_parsedInfo info, int maxC){
+    t_list *criticalPaths;
+    t_node *node;
+    criticalPaths = (t_list *) malloc(sizeof(t_list));
+    criticalPaths->first = NULL;
+    for (int i = 0; i < info.totalNodes; i++){
+        if (graph[i].relax == maxC){
+            node = (t_node *) malloc(sizeof(t_node));
+            node->id = graph[i].id;
+            node->next = criticalPaths->first;
+            criticalPaths->first = node;
+        }
+    }
+    return criticalPaths;
+}
+
+//Aloca memoria para os caminhos criticos
+t_list *allocateCriticals(int totalC){
+    t_list *criticalPs;
+    criticalPs = (t_list *) malloc(totalC * sizeof(t_list));
+    for (int i = 0; i < totalC; i++)
+        criticalPs->first = NULL;
+    return criticalPs;
+}
+
+//Gera o caminho critico
+t_list *generateCriticalPath(t_graph *graph, t_parsedInfo info, int id, t_list *criticalPath){
     t_graph *node, *aux;
-    int min = MIN, idMaior;
+    t_node *vertex;
     node = find(graph, info, id);
-    node->soften = node->weight;
-//  Marca no visitado
-    node->flagVisit = TRUE;
-    if (node->list != NULL) {
-//      Amacia nos adjacentes
-        while (node->list->first != NULL) {
-            aux = find(graph, info, node->list->first->id);
-            if (aux->soften <= aux->weight + node->soften) {
-                aux->soften = aux->weight + node->soften;
-            }
-            node->list->first = node->list->first->next;
-        }
-//  Acha o maior grau
-    for (int i = 0; i < info.totalNodes; i++){
-        if (graph[i].flagVisit == 0 && graph[i].soften != 0){
-            if (graph[i].soften >= min){
-                min = graph[i].soften;
+    for (int i = 0; i < info.totalEdges; i++){
+        if (info.edges[i].target == id){
+            aux = find(graph, info, info.edges[i].source);
+            if (node->relax - aux->relax == node->weight){
+                vertex = (t_node *) malloc(sizeof(t_node));
+                vertex->id = aux->id;
+                vertex->next = criticalPath->first;
+                criticalPath->first = vertex;
+                generateCriticalPath(graph, info, aux->id, criticalPath);
             }
         }
     }
-    for (int i = 0; i < info.totalNodes; i++){
-        if (graph[i].flagVisit == 0 & graph[i].soften == min){
-            printf("Maior: %s\n", graph[i].label);
-            getchar();
-            existeElemento = TRUE;
-        }
-    }
-
-
-//        for (int i = 0; i < info.totalNodes; i++)
-//            graph[i].soften = MIN;
-//        for (int i = 0; i < info.totalNodes; i++){
-//            printf("%s\n", graph[i].label);
-//            printf("%d\n", graph[i].soften);
-//            getchar();
-//        }
-    }
 }
-
-t_longestPath *longestPath (t_graph *graph, t_parsedInfo info) {
-    t_list *starters;
-    t_longestPath *path;
-    path = (t_longestPath *) malloc(sizeof(t_longestPath));
-    path->first = NULL;
-    path->last = NULL;
-    starters = generateStarters(graph, info);
-    while (starters->first != NULL) {
-        printf("%d\n", starters->first->id);
-        softenAdj(graph, info, starters->first->id, path);
-        getchar();
-        starters->first = starters->first->next;
-        //        getchar();
-//        for (int i = 0; i < info.totalNodes; i++){
-//            printf("%d\n", graph[i].soften);
-//        }
-    }
-}
-//  TODO Encontrei os vertices iniciais, farei uma busca a partir deles para gerar o maior caminho
-//    while (starters->first != NULL){
-//        printf("Code: %d\n", starters->first->id);
-//        getchar();
-//        starters->first = starters->first->next;
-//    }
-
-
 
 int main(){
     t_parsedInfo info;
-    t_graph *graph;
+    t_graph *graph, *aux;
+    t_graph *backup;
+    t_list *critical, *topoSort, *criticalPs;
+    t_node *auxNode;
+    int maxC, totalC;
     info = gmlParser();
     graph = generateGraph(info);
-    longestPath(graph, info);
-//    for (int i = 0; i < info.totalNodes; i++){
-//        printf("Code: %d\n", graph[i].id);
-//        printf("Label: %s\n", graph[i].label);
-//        printf("Weight: %d\n", graph[i].weight);
-//        printf("----------\n");
-//        if (graph[i].list == NULL)  printf("NULO\n");
-//        else {
-//            while (graph[i].list->first != NULL) {
-//                printf("-> %d ", graph[i].list->first->id);
-//                graph[i].list->first = graph[i].list->first->next;
-//            }
-//        }
-//        printf("\n");
-//    }
+    backup = generateGraph(info);
+
+    topoSort = (t_list *) malloc(sizeof(t_list));
+    topoSort->first = NULL;
+    for (int i = 0; i < info.totalNodes; i++) {
+        if (!graph[i].flagVisit) {
+            topSort(&graph[i], info, topoSort);
+        }
+    }
+    invertWeights(backup, info);
+    generateStarters(backup, info);
+
+    shortestPath(backup, info, topoSort);
+    invertWeights(backup, info);
+    invertRelax(backup, info);
+    maxC = maxCredits(backup, info);
+    totalC = totalCriticals(backup, info, maxC);
+    criticalPs = allocateCriticals(totalC);
+    critical = criticalEndPoints(backup, info, maxC);
+    for (int i = 0; i < totalC; i++){
+        auxNode = (t_node *) malloc(sizeof(t_node));
+        auxNode->id = critical->first->id;
+        auxNode->next = criticalPs[i].first;
+        criticalPs[i].first = auxNode;
+        generateCriticalPath(backup, info, critical->first->id, &criticalPs[i]);
+        critical->first = critical->first->next;
+    }
+
+    for (int i = 0; i < totalC; i++){
+        while(criticalPs[i].first != NULL){
+            printf("%d -> ", criticalPs[i].first->id);
+            criticalPs[i].first = criticalPs[i].first->next;
+        }
+        printf("\n");
+    }
+
     return 0;
 }
