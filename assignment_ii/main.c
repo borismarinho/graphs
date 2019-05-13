@@ -286,7 +286,7 @@ int main(){
     generateGraphDotFile(info);
     fp = fopen("graph.dot", "a+");
     for (int i = 0; i < totalC; i++){
-        fprintf(fp, "digraph Critical %d\n", i + 1);
+        fprintf(fp, "digraph Critical%d{\n", i + 1);
         while(criticalPs[i].first->next != NULL){
             fprintf(fp, "\t%d -> %d;\n", criticalPs[i].first->id, criticalPs[i].first->next->id);
             fprintf(fp, "\t%d [label=\"%d Peso: %d Peso Acumulado: %d\"];\n", criticalPs[i].first->id, criticalPs[i].first->id, find(backup, info, criticalPs[i].first->id)->weight, find(backup, info, criticalPs[i].first->id)->relax);
