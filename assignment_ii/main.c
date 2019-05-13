@@ -233,7 +233,21 @@ t_list *generateCriticalPath(t_graph *graph, t_parsedInfo info, int id, t_list *
     }
 }
 
+void generateGraphDotFile(t_parsedInfo info){
+    FILE *fp;
+    fp = fopen("graph.dot", "w+");
+    fprintf(fp, "digraph CiC{\n");
+    for (int i = 0; i < info.totalEdges; i++){
+        fprintf(fp, "\t%d -> %d;\n", info.edges[i].source, info.edges[i].target);
+    }
+    fprintf(fp, "\tlabelloc=\"t\";\n");
+    fprintf(fp, "\tlabel=\"Ciencia da Computacao\";\n");
+    fprintf(fp, "}\n\n");
+    fclose(fp);
+}
+
 int main(){
+    FILE *fp;
     t_parsedInfo info;
     t_graph *graph, *aux;
     t_graph *backup;
@@ -269,14 +283,17 @@ int main(){
         generateCriticalPath(backup, info, critical->first->id, &criticalPs[i]);
         critical->first = critical->first->next;
     }
-
+    generateGraphDotFile(info);
+    fp = fopen("graph.dot", "a+");
     for (int i = 0; i < totalC; i++){
-        while(criticalPs[i].first != NULL){
-            printf("%d -> ", criticalPs[i].first->id);
+        fprintf(fp, "digraph Critical %d\n", i + 1);
+        while(criticalPs[i].first->next != NULL){
+            fprintf(fp, "\t%d -> %d;\n", criticalPs[i].first->id, criticalPs[i].first->next->id);
             criticalPs[i].first = criticalPs[i].first->next;
         }
-        printf("\n");
+        fprintf(fp, "\tlabelloc=\"t\";\n");
+        fprintf(fp, "\tlabel=\"Caminho Critico %d  ::  Peso Total = %d\";\n", i + 1, maxC);
+        fprintf(fp, "}\n\n");
     }
-
     return 0;
 }
