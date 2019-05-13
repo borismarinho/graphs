@@ -289,8 +289,10 @@ int main(){
         fprintf(fp, "digraph Critical %d\n", i + 1);
         while(criticalPs[i].first->next != NULL){
             fprintf(fp, "\t%d -> %d;\n", criticalPs[i].first->id, criticalPs[i].first->next->id);
+            fprintf(fp, "\t%d [label=\"%d Peso: %d Peso Acumulado: %d\"];\n", criticalPs[i].first->id, criticalPs[i].first->id, find(backup, info, criticalPs[i].first->id)->weight, find(backup, info, criticalPs[i].first->id)->relax);
             criticalPs[i].first = criticalPs[i].first->next;
         }
+        fprintf(fp, "\t%d [label=\"%d Peso: %d Peso Acumulado: %d\"];\n", criticalPs[i].first->id, criticalPs[i].first->id, find(backup, info, criticalPs[i].first->id)->weight, find(backup, info, criticalPs[i].first->id)->relax);
         fprintf(fp, "\tlabelloc=\"t\";\n");
         fprintf(fp, "\tlabel=\"Caminho Critico %d  ::  Peso Total = %d\";\n", i + 1, maxC);
         fprintf(fp, "}\n\n");
