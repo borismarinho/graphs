@@ -295,5 +295,6 @@ int main(){
         fprintf(fp, "\tlabel=\"Caminho Critico %d  ::  Peso Total = %d\";\n", i + 1, maxC);
         fprintf(fp, "}\n\n");
     }
+    fclose(fp);
     return 0;
 }
