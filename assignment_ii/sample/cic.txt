@@ -1,0 +1,387 @@
+graph
+[
+  node
+  [
+    id 113034
+    label Calculo 1
+    weight 6
+  ]
+  node
+  [
+    id 113468
+    label Introducao aos Sistemas Computacionais
+    weight 4
+  ]
+  node
+  [
+    id 113450
+    label Fundamentos Teoricos da Computacao
+    weight 4
+  ]
+  node
+  [
+    id 113476
+    label Algoritmos e Programacao de Computadores
+    weight 6
+  ]
+  node
+  [
+    id 116726
+    label INFORMATICA E SOCIEDADE
+    weight 2
+  ]
+  node
+  [
+    id 129011
+    label Circuitos Logicos
+    weight 4
+  ]
+  node
+  [
+    id 116319
+    label ESTRUTURAS DE DADOS
+    weight 4
+  ]
+  node
+  [
+    id 129020
+    label Laboratorio de Circuitos Logicos
+    weight 2
+  ]
+  node
+  [
+    id 113042
+    label Calculo 2
+    weight 6
+  ]
+  node
+  [
+    id 113093
+    label INTRODUCAO A ALGEBRA LINEAR
+    weight 4
+  ]
+  node
+  [
+    id 116394
+    label Organizacao e Arquitetura de Computadores
+    weight 4
+  ]
+  node
+  [
+    id 117889
+    label Tecnicas de Programacao 1
+    weight 4
+  ]
+  node
+  [
+    id 113107
+    label Algebra 1
+    weight 4
+  ]
+  node
+  [
+    id 113417
+    label CALCULO NUMERICO
+    weight 4
+  ]
+  node
+  [
+    id 115045
+    label Probabilidade e Estatistica
+    weight 4
+  ]
+  node
+  [
+    id 117366
+    label Logica Computacional 1
+    weight 4
+  ]
+  node
+  [
+    id 117897
+    label Tecnicas de Programacao 2
+    weight 4
+  ]
+  node
+  [
+    id 117901
+    label Teoria e Aplicacao de Grafos
+    weight 4
+  ]
+  node
+  [
+    id 116572
+    label Redes de Computadores
+    weight 4
+  ]
+  node
+  [
+    id 116343
+    label LINGUAGENS DE PROGRAMACAO
+    weight 4
+  ]
+  node
+  [
+    id 117935
+    label Programacao Concorrente
+    weight 4
+  ]
+  node
+  [
+    id 116441
+    label ENGENHARIA DE SOFTWARE
+    weight 4
+  ]
+  node
+  [
+    id 116378
+    label BANCOS DE DADOS
+    weight 4
+  ]
+  node
+  [
+    id 116653
+    label INTRODUCAO A INTELIGENCIA ARTIFICIAL
+    weight 4
+  ]
+  node
+  [
+    id 116432
+    label SOFTWARE BASICO
+    weight 4
+  ]
+  node
+  [
+    id 117960
+    label Fundamentos de Sistemas Operacionais
+    weight 4
+  ]
+  node
+  [
+    id 116882
+    label Automatos e Computabilidade
+    weight 6
+  ]
+  node
+  [
+    id 116416
+    label SISTEMAS DE INFORMACAO
+    weight 4
+  ]
+  node
+  [
+    id 117943
+    label Computacao Experimental
+    weight 4
+  ]
+  node
+  [
+    id 117536
+    label Projeto e Analise de Algoritmos
+    weight 4
+  ]
+  node
+  [
+    id 117951
+    label Compiladores
+    weight 4
+  ]
+  node
+  [
+    id 117927
+    label Seguranca Computacional
+    weight 4
+  ]
+  node
+  [
+    id 117919
+    label Metodologia Cientifica
+    weight 2
+  ]
+  node
+  [
+    id 116297
+    label TOPICOS AVANCADOS EM COMPUTADORES
+    weight 4
+  ]
+  edge
+  [
+    source 113034
+    target 113042
+  ]
+  edge
+  [
+    source 113034
+    target 115045
+  ]
+  edge
+  [
+    source 113034
+    target 117536
+  ]
+  edge
+  [
+    source 113450
+    target 117366
+  ]
+  edge
+  [
+    source 113476
+    target 129011
+  ]
+  edge
+  [
+    source 113476
+    target 129020
+  ]
+  edge
+  [
+    source 129011
+    target 116394
+  ]
+  edge
+  [
+    source 116319
+    target 117889
+  ]
+  edge
+  [
+    source 116319
+    target 117366
+  ]
+  edge
+  [
+    source 116319
+    target 117901
+  ]
+  edge
+  [
+    source 116319
+    target 116572
+  ]
+  edge
+  [
+    source 116319
+    target 116343
+  ]
+  edge
+  [
+    source 116319
+    target 116653
+  ]
+  edge
+  [
+    source 116319
+    target 116432
+  ]
+  edge
+  [
+    source 116319
+    target 116416
+  ]
+  edge
+  [
+    source 116319
+    target 117943
+  ]
+  edge
+  [
+    source 116319
+    target 117536
+  ]
+  edge
+  [
+    source 129020
+    target 116394
+  ]
+  edge
+  [
+    source 113042
+    target 113417
+  ]
+  edge
+  [
+    source 113042
+    target 116572
+  ]
+  edge
+  [
+    source 116394
+    target 117935
+  ]
+  edge
+  [
+    source 116394
+    target 116432
+  ]
+  edge
+  [
+    source 117889
+    target 117897
+  ]
+  edge
+  [
+    source 117889
+    target 116441
+  ]
+  edge
+  [
+    source 117889
+    target 117536
+  ]
+  edge
+  [
+    source 113107
+    target 116882
+  ]
+  edge
+  [
+    source 115045
+    target 116572
+  ]
+  edge
+  [
+    source 115045
+    target 117943
+  ]
+  edge
+  [
+    source 117897
+    target 117935
+  ]
+  edge
+  [
+    source 116572
+    target 117927
+  ]
+  edge
+  [
+    source 116343
+    target 116441
+  ]
+  edge
+  [
+    source 116343
+    target 117951
+  ]
+  edge
+  [
+    source 117935
+    target 117960
+  ]
+  edge
+  [
+    source 116378
+    target 116416
+  ]
+  edge
+  [
+    source 116432
+    target 117951
+  ]
+  edge
+  [
+    source 116882
+    target 117951
+  ]
+]
