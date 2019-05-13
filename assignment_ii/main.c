@@ -1,3 +1,22 @@
+/*
+    16/0114195 - Boris Marinho Ramos Silva Araujo
+    19/0055511 - Ignacio Sanabria Alonso de Caso
+
+    O codigo foi projetado para ler o arquivo gml, calcular a solucao
+    e grava-la em um arquivo .dot para ser lido pelo grahpviz.
+
+    Instrucoes para execucao:
+    $ make
+    $ make run
+
+    Compilado com Ubuntu 16.04.11 LTS 32 bits
+    Versao do compilador  gcc 5.4.0
+
+    Para instalar o dot:
+    $ sudo apt-get install graphviz
+    
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
