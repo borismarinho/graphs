@@ -13,3 +13,8 @@
 
     Para instalar o dot:
     $ sudo apt-get install graphviz
+
+    O arquivo webscrapping.py gera o arquivo gml diretamente da internet.
+    
+    Como o arquivo foi gerado diretamente do site do MatrículaWeb algumas inconsistências
+    estão presentes, como a falta de APC como pré-requisito de ED.
